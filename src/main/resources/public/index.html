@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Twittern't</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h1>Bienvanido a Twittern't</h1>
+        
+        <br><br>
+        <form action="/tweet">
+            <label for="tweet">Escribe tu tweet:</label><br>
+            <input type="text" id="posttweet" name="tweet" maxlength="140"><br><br>
+            <input type="button" value="Submit" onclick="loadPostMsg(posttweet)">
+        </form>
+        
+        <div id="postrespmsg"></div>
+        
+        <script>
+            function loadPostMsg(message){
+                let url = "/tweet?user=anonym&message=" + message.value;
+
+                fetch (url, {method: 'POST'})
+                    .then(x => x.text());
+            }
+        </script>
+        
+        
+        <br><br>
+        <form action="/stream">
+            <input type="button" value="Mostrar FEED" onclick="loadGetMsg()">
+        </form> 
+        <div id="getrespmsg"></div>
+
+        <script>
+            function loadGetMsg() {
+                const xhttp = new XMLHttpRequest();
+                xhttp.onload = function() {
+                    document.getElementById("getrespmsg").innerHTML =
+                    this.responseText;
+                }
+                xhttp.open("GET", "/stream");
+                xhttp.send();
+            }
+        </script>
+    </body>
+</html>

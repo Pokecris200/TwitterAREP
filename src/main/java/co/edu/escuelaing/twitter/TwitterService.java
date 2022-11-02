@@ -12,13 +12,18 @@ import static spark.Spark.*;
  *
  * @author cristian.forero-m
  */
-public class TweeterService {
+public class TwitterService {
     
     //Base de datos en memoria que guarda los JSON de los tweets
     private static List<String> DB = new ArrayList<>();
     
     public static void main(String[] args) {
         port(getPort());
+        staticFiles.location("/public");
+        DB.add("{"
+                + "\"user\":\""+ "anonym" +"\","
+                + "\"tweet\":\"" + "Hola Mundo" + "\""
+                + "}");
         
         //Servicio de Publicación
         post("/tweet", (req, res) ->{
@@ -26,13 +31,18 @@ public class TweeterService {
                 + "\"user\":\""+ req.queryParams("user") +"\","
                 + "\"tweet\":\"" + req.queryParams("message") + "\""
                 + "}";
+            DB.add(response);
             return response;
         });
         //Servicio de Stream
         get("/stream",(req,res)->{
-            String s = "FEED PRINCIPAL" + "</br>"
-                    + "hola gfcvbnlkñdsfjmlkjdsngfkjnbrdgnjlkanglkjbdkvd " + "\n"
-                    + "ihsdbvinsdovmdoklfg";
+            String s = "FEED PRINCIPAL" + "</br></br>";
+            for(String tweet : DB){
+                String u = getUser(tweet);
+                String m = getMessage(tweet);
+                s += "User: " + u.replace("\"", "") + "</br>" ;
+                s += m.replace("\"", "") + "</br></br>";
+            }
             return s;
         });
     }
@@ -42,5 +52,16 @@ public class TweeterService {
             return Integer.parseInt(System.getenv("PORT"));
         }
         return 8081;
+    }
+
+    private static String getUser(String tweet) {
+        String user = tweet.replace("{", "").replace("}", "").split(",")[0];
+        user = user.split(":")[1];
+        return user;
+    }
+    private static String getMessage(String tweet) {
+        String user = tweet.replace("{", "").replace("}", "").split(",")[1];
+        user = user.split(":")[1];
+        return user;
     }
 }
